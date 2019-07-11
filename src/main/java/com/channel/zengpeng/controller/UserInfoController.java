@@ -1,14 +1,26 @@
 package com.channel.zengpeng.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-@RestController
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import com.channel.zengpeng.service.UserInfoService;
+
+@Controller
 public class UserInfoController {
 
-	@GetMapping("/quickDemo")
-	public String quickDemo() {
-		return "this is quick demo for Spring Boot!";
+
+	@Autowired
+	UserInfoService userInfoService;
+	
+	@GetMapping("/userInfo")
+	public String userInfo(HttpServletRequest request,HttpServletResponse response, ModelMap model) {
+		model.put("userInfo", userInfoService.findAll());
+		return "hello";
 	}
 	
 }
