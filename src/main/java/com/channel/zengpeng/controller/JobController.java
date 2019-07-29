@@ -7,14 +7,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.channel.zengpeng.entity.JobEntity;
+import com.channel.zengpeng.job.TestQuartz;
 import com.channel.zengpeng.service.DynamicJobService;
+import com.channel.zengpeng.service.QuartzJobManager;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -28,6 +35,24 @@ public class JobController {
     private SchedulerFactoryBean schedulerFactoryBean;
     @Autowired
     private DynamicJobService jobService;
+    @Autowired
+    QuartzJobManager quartzJobManager;
+
+
+    @GetMapping("/add")
+    public void add(HttpServletRequest request) {
+    	//任务名称
+        String name = request.getParameter("name");
+        //任务组名称
+        String groupName = "task";
+        //cron表达式
+        String cron = "0 0/1 * * * ?";
+        //需要给任务携带的参数
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", "张三");
+        map.put("sex", "0");
+        quartzJobManager.addJob(TestQuartz.class, name, groupName, cron, map);
+    }
 
     //初始化启动所有的Job
     @PostConstruct
