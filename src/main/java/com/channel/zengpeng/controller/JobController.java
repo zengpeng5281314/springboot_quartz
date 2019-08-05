@@ -46,7 +46,7 @@ public class JobController {
         //任务组名称
         String groupName = "task";
         //cron表达式
-        String cron = "0 0/1 * * * ?";
+        String cron = "0/5 * * * * ?";
         //需要给任务携带的参数
         Map<String, Object> map = new HashMap<>();
         map.put("name", "张三");

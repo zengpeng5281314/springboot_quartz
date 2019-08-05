@@ -16,17 +16,17 @@ import com.channel.zengpeng.service.UserInfoService;
 import net.sf.json.JSONObject;
 
 @Controller
-public class UserInfoController {
+public class IndexController {
 
 	@Autowired
 	UserInfoService userInfoService;
 
-	@RequestMapping("/login")
+	@RequestMapping("/index")
 	public String login(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
-		return "login";
+		return "index";
 	}
 
-	@PostMapping("/dologin")
+	@PostMapping("/doindex")
 	@ResponseBody
 	public String dologin(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
 		String username = request.getParameter("username");
