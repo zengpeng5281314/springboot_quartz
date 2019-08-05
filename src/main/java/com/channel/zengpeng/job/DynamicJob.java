@@ -1,4 +1,4 @@
-package com.channel.zengpeng.service;
+package com.channel.zengpeng.job;
 
 import org.quartz.*;
 import org.slf4j.Logger;

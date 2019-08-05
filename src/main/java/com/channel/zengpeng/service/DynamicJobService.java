@@ -27,6 +27,12 @@ public class DynamicJobService {
         repository.findAll().forEach(list::add);
         return list;
     }
+    
+    //添加Job
+    public JobEntity saveJobEntity(JobEntity jobEntity) {
+        return repository.save(jobEntity);
+    }
+    
     //获取JobDataMap.(Job参数对象)
     public JobDataMap getJobDataMap(JobEntity job) {
         JobDataMap map = new JobDataMap();
@@ -38,16 +44,22 @@ public class DynamicJobService {
         map.put("vmParam", job.getVmParam());
         map.put("jarPath", job.getJarPath());
         map.put("status", job.getStatus());
+        map.put("classPath", job.getClassPath());
         return map;
     }
     //获取JobDetail,JobDetail是任务的定义,而Job是任务的执行逻辑,JobDetail里会引用一个Job Class来定义
     public JobDetail geJobDetail(JobKey jobKey, String description, JobDataMap map) {
-        return JobBuilder.newJob(DynamicJob.class)
-                .withIdentity(jobKey)
-                .withDescription(description)
-                .setJobData(map)
-                .storeDurably()
-                .build();
+        try {
+			return JobBuilder.newJob(((Job)(Class.forName(map.getString("classPath")).newInstance())).getClass())
+			        .withIdentity(jobKey)
+			        .withDescription(description)
+			        .setJobData(map)
+			        .storeDurably()
+			        .build();
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
     }
     //获取Trigger (Job的触发器,执行规则)
     public Trigger getTrigger(JobEntity job) {

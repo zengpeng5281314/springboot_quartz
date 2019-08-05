@@ -22,9 +22,10 @@ public class TestQuartz implements Job {
 		for (String key : map.keySet()) {
 			System.out.println("key:"+key+"  vaule:"+map.get(key));
 		}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		System.out.println(taskName +"   " + sdf.format(new Date()));
 		// 处理执行任务之后的业务
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		System.out.println(taskName +"   " + sdf.format(new Date()));
 	}
 }

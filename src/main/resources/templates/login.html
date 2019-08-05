@@ -48,7 +48,8 @@
 		    			type : "POST",
 		    			url : "/dologin",
 		    			dataType : "json",
-		    			data : data.field,
+		    			contentType: "application/json;charset-UTF-8"
+		    			data : JSON.stringify(data.field),
 		    			success : function(res) {
 		    				if(res.success){
 		    					layer.alert("登录成功", {

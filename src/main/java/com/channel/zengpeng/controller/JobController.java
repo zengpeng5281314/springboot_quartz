@@ -1,131 +1,55 @@
 package com.channel.zengpeng.controller;
 
+import java.util.List;
 
-import org.quartz.*;
-import org.quartz.impl.matchers.GroupMatcher;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.channel.zengpeng.entity.JobEntity;
-import com.channel.zengpeng.job.TestQuartz;
 import com.channel.zengpeng.service.DynamicJobService;
 import com.channel.zengpeng.service.QuartzJobManager;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-/**
- * Created by EalenXie on 2018/6/4 16:12
- */
-@RestController
+@Controller
 public class JobController {
 
-    private static final Logger logger = LoggerFactory.getLogger(JobController.class);
-    @Autowired
-    private SchedulerFactoryBean schedulerFactoryBean;
-    @Autowired
-    private DynamicJobService jobService;
-    @Autowired
-    QuartzJobManager quartzJobManager;
+	private static final Logger logger = LoggerFactory.getLogger(JobController.class);
+	@Autowired
+	private SchedulerFactoryBean schedulerFactoryBean;
+	@Autowired
+	private DynamicJobService jobService;
+	@Autowired
+	QuartzJobManager quartzJobManager;
+
+	@GetMapping("/joblist")
+	public String joblist(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
+		List<JobEntity> joblist = jobService.loadJobs();
+		model.put("joblist", joblist);
+		return "/jobs/joblist";
+	}
+
+	@GetMapping("/addjob")
+	public String addjob(@RequestParam(defaultValue="0",name="id") int id, HttpServletRequest request, HttpServletResponse response,
+			ModelMap model) {
+		int type=0;
+		JobEntity jobEntity = new JobEntity();
+		if(id!=0){
+			jobEntity = jobService.getJobEntityById(id);
+			type=1;
+		}
+		model.put("job", jobEntity);
+		model.put("type", type);
+		return "/jobs/addjob";
+	}
 
 
-    @GetMapping("/add")
-    public void add(HttpServletRequest request) {
-    	//任务名称
-        String name = request.getParameter("name");
-        //任务组名称
-        String groupName = "task";
-        //cron表达式
-        String cron = "0/5 * * * * ?";
-        //需要给任务携带的参数
-        Map<String, Object> map = new HashMap<>();
-        map.put("name", "张三");
-        map.put("sex", "0");
-        quartzJobManager.addJob(TestQuartz.class, name, groupName, cron, map);
-    }
-
-    //初始化启动所有的Job
-    @PostConstruct
-    public void initialize() {
-        try {
-            reStartAllJobs();
-            logger.info("INIT SUCCESS");
-        } catch (SchedulerException e) {
-            logger.info("INIT EXCEPTION : " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    //根据ID重启某个Job
-    @RequestMapping("/refresh/{id}")
-    public String refresh(@PathVariable Integer id) throws SchedulerException {
-        String result;
-        JobEntity entity = jobService.getJobEntityById(id);
-        if (entity == null) return "error: id is not exist ";
-        synchronized (logger) {
-            JobKey jobKey = jobService.getJobKey(entity);
-            Scheduler scheduler = schedulerFactoryBean.getScheduler();
-            scheduler.pauseJob(jobKey);
-            scheduler.unscheduleJob(TriggerKey.triggerKey(jobKey.getName(), jobKey.getGroup()));
-            scheduler.deleteJob(jobKey);
-            JobDataMap map = jobService.getJobDataMap(entity);
-            JobDetail jobDetail = jobService.geJobDetail(jobKey, entity.getDescription(), map);
-            if (entity.getStatus().equals("OPEN")) {
-                scheduler.scheduleJob(jobDetail, jobService.getTrigger(entity));
-                result = "Refresh Job : " + entity.getName() + "\t jarPath: " + entity.getJarPath() + " success !";
-            } else {
-                result = "Refresh Job : " + entity.getName() + "\t jarPath: " + entity.getJarPath() + " failed ! , " +
-                        "Because the Job status is " + entity.getStatus();
-            }
-        }
-        return result;
-    }
-
-
-    //重启数据库中所有的Job
-    @RequestMapping("/refresh/all")
-    public String refreshAll() {
-        String result;
-        try {
-            reStartAllJobs();
-            result = "SUCCESS";
-        } catch (SchedulerException e) {
-            result = "EXCEPTION : " + e.getMessage();
-        }
-        return "refresh all jobs : " + result;
-    }
-
-    /**
-     * 重新启动所有的job
-     */
-    private void reStartAllJobs() throws SchedulerException {
-        synchronized (logger) {                                                         //只允许一个线程进入操作
-            Scheduler scheduler = schedulerFactoryBean.getScheduler();
-            Set<JobKey> set = scheduler.getJobKeys(GroupMatcher.anyGroup());
-            scheduler.pauseJobs(GroupMatcher.anyGroup());                               //暂停所有JOB
-            for (JobKey jobKey : set) {                                                 //删除从数据库中注册的所有JOB
-                scheduler.unscheduleJob(TriggerKey.triggerKey(jobKey.getName(), jobKey.getGroup()));
-                scheduler.deleteJob(jobKey);
-            }
-            for (JobEntity job : jobService.loadJobs()) {                               //从数据库中注册的所有JOB
-                logger.info("Job register name : {} , group : {} , cron : {}", job.getName(), job.getGroup(), job.getCron());
-                JobDataMap map = jobService.getJobDataMap(job);
-                JobKey jobKey = jobService.getJobKey(job);
-                JobDetail jobDetail = jobService.geJobDetail(jobKey, job.getDescription(), map);
-                if (job.getStatus().equals("OPEN")) scheduler.scheduleJob(jobDetail, jobService.getTrigger(job));
-                else
-                    logger.info("Job jump name : {} , Because {} status is {}", job.getName(), job.getName(), job.getStatus());
-            }
-        }
-    }
 }
