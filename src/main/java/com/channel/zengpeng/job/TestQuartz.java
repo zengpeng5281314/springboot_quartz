@@ -17,11 +17,10 @@ public class TestQuartz implements Job {
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		// 获取任务名
 		String taskName = context.getJobDetail().getKey().getName();
-		JobDataMap jobMap = context.getTrigger().getJobDataMap();
+		JobDataMap jobMap = context.getJobDetail().getJobDataMap();
 		Map<String, Object> map = jobMap.getWrappedMap();
-		for (String key : map.keySet()) {
-			System.out.println("key:"+key+"  vaule:"+map.get(key));
-		}
+		String parameter = (String) map.get("parameter");
+		System.out.println(parameter);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		System.out.println(taskName +"   " + sdf.format(new Date()));
 		// 处理执行任务之后的业务

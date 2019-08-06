@@ -30,9 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by EalenXie on 2018/6/4 16:12
- */
+
 @RestController
 public class JobResController {
 
@@ -78,7 +76,6 @@ public class JobResController {
 			JobEntity jobEntityNew = jobService.saveJobEntity(jobEntityOld);
 			try {
 				FlushJob(jobEntityNew);
-				// reStartAllJobs();
 			} catch (SchedulerException e) {
 				e.printStackTrace();
 			}
