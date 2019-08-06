@@ -32,7 +32,7 @@
                         <div class="layui-card-body ">
                             <form class="layui-form layui-col-space5">
                                 <div class="layui-inline layui-show-xs-block">
-                                    <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                                    <input type="text" name="username"  placeholder="请输入名称" autocomplete="off" class="layui-input">
                                 </div>
                                 <div class="layui-inline layui-show-xs-block">
                                     <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
@@ -40,7 +40,6 @@
                             </form>
                         </div>
                         <div class="layui-card-header">
-                            <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
                             <button class="layui-btn" onclick="xadmin.open('添加定时任务','./addjob',600,400)"><i class="layui-icon"></i>添加</button>
                         </div>
                         <div class="layui-card-body layui-table-body layui-table-main">
@@ -79,16 +78,18 @@
                                       </span>
                                     </td>
                                     <td class="td-manage">
-                                      <a th:onclick="'member_stop(this,'+${job.id}+')'" href="javascript:;" th:title="${job.status}">
-                                        <i class="layui-icon" th:if="${job.status} eq 'OPEN'" >&#xe651;</i>
-                                        <i class="layui-icon" th:if="${job.status} eq 'CLOSE'">&#xe652;</i>
+                                      <a th:onclick="'member_stop(this,'+${job.id}+')'" href="javascript:;" title="停止" th:if="${job.status} eq 'OPEN'" >
+                                        <i class="layui-icon">&#xe651;</i>
+                                      </a>
+                                      <a th:onclick="'member_stop(this,'+${job.id}+')'" href="javascript:;" title="启动" th:if="${job.status} eq 'CLOSE'" >
+                                        <i class="layui-icon" >&#xe652;</i>
                                       </a>
                                       <a title="编辑" th:onclick="'xadmin.open(\'编辑\',\'/addjob?id='+${job.id}+'\',600,400)'" href="javascript:;">
                                         <i class="layui-icon">&#xe642;</i>
                                       </a>
-                                      <a title="删除" th:onclick="'member_del(this,'+${job.id}+')'" href="javascript:;">
+                                     <!--  <a title="删除" th:onclick="'member_del(this,'+${job.id}+')'" href="javascript:;">
                                         <i class="layui-icon">&#xe640;</i>
-                                      </a>
+                                      </a> -->
                                       <a title="刷新" th:onclick="'member_flush(this,'+${job.id}+')'" href="javascript:;">
                                         <i class="layui-icon">&#xe669;</i>
                                       </a>
@@ -105,8 +106,6 @@
                                   <a class="prev" href="">&lt;&lt;</a>
                                   <a class="num" href="">1</a>
                                   <span class="current">2</span>
-                                  <a class="num" href="">3</a>
-                                  <a class="num" href="">489</a>
                                   <a class="next" href="">&gt;&gt;</a>
                                 </div>
                             </div>
@@ -125,26 +124,37 @@
 
        /*用户-停用*/
       function member_stop(obj,id){
-    	   var tip=$(obj).attr('title')=="OPEN"?"确认要停用吗？":"确认要启用吗？";
+    	   var tip=$(obj).attr('title')=="停止"?"确认要停用吗？":"确认要启用吗？";
+    	   var status="OPEN";
            layer.confirm(tip,function(index){
-              if($(obj).attr('title')=='OPEN'){
-
+              if($(obj).attr('title')=='启动'){
                 //发异步把用户状态进行更改
-                $(obj).attr('title','CLOSE')
-                $(obj).find('i').html('&#xe652;');
-
-                $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
-                layer.msg('已停用!',{icon: 5,time:1000});
-
-              }else{
-                $(obj).attr('title','OPEN')
+                $(obj).attr('title','停止');
                 $(obj).find('i').html('&#xe651;');
-
                 $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
                 layer.msg('已启用!',{icon: 5,time:1000});
+              }else{
+            	 status = "CLOSE";
+                $(obj).attr('title','启动');
+                $(obj).find('i').html('&#xe652;');
+                $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
+                layer.msg('已停用!',{icon: 5,time:1000});
               }
-              
+              var daString ={'id':id,'status':status};
+              $.ajax({
+      			type : "POST",
+      			url : "/updateJobStatus",
+      			dataType : "json",
+      			data : JSON.stringify(daString),
+      			contentType: "application/json;charset-UTF-8",
+      			success : function(res) {
+      			},
+      			error : function(data) {
+      			}
+      		});
           });
+           
+          
       }
 
       /*用户-删除*/
@@ -156,11 +166,22 @@
           });
       }
 
-      /*用户-删除*/
+      /*用户-刷新*/
       function member_flush(obj,id){
           layer.confirm('确认要刷新吗？',function(index){
               //发异步删除数据
-              
+              var daString ={'id':id};
+              $.ajax({
+      			type : "POST",
+      			url : "/refresh/"+id,
+      			dataType : "json",
+      			data : JSON.stringify(daString),
+      			contentType: "application/json;charset-UTF-8",
+      			success : function(res) {
+      			},
+      			error : function(data) {
+      			}
+      		});
         	  layer.msg('已刷新!',{icon:1,time:1000});
           });
       }

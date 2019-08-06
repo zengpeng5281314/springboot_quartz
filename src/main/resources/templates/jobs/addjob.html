@@ -31,31 +31,31 @@
                         <label for="L_group" class="layui-form-label">
                             <span class="x-red">*</span>组名</label>
                         <div class="layui-input-inline">
-                            <input type="text" id="L_group" name="group"  required="" lay-verify="group" autocomplete="off" class="layui-input"></div>
+                            <input type="text" id="L_group" name="group" th:value="${job.group}" required="" lay-verify="group" autocomplete="off" class="layui-input"></div>
                     </div>
                     <div class="layui-form-item">
                         <label for="L_cron" class="layui-form-label">
                             <span class="x-red">*</span>执行规则</label>
                         <div class="layui-input-inline">
-                            <input type="text" id="L_cron" name="cron" required="" lay-verify="cron" autocomplete="off" class="layui-input"></div>
+                            <input type="text" id="L_cron" name="cron" th:value="${job.cron}"  required="" lay-verify="cron" autocomplete="off" class="layui-input"></div>
                         <div class="layui-form-mid layui-word-aux">cron执行的规则</div></div>
                     <div class="layui-form-item">
                         <label for="L_classPath" class="layui-form-label">
                             <span class="x-classPath">*</span>class路径</label>
                         <div class="layui-input-inline">
-                            <input type="text" id="L_classPath" name="classPath" required="" lay-verify="classPath" autocomplete="off" class="layui-input"></div>
+                            <input type="text" id="L_classPath" name="classPath"  th:value="${job.classPath}" required="" lay-verify="classPath" autocomplete="off" class="layui-input"></div>
                     </div>
                     <div class="layui-form-item">
                         <label for="L_parameter" class="layui-form-label">
                            	 参数</label>
                         <div class="layui-input-inline">
-                            <input type="text" id="L_parameter" name="parameter" required="" autocomplete="off" class="layui-input"></div>
+                            <input type="text" id="L_parameter" name="parameter" th:value="${job.parameter}" required="" autocomplete="off" class="layui-input"></div>
                     </div>
                     <div class="layui-form-item">
                         <label for="L_description" class="layui-form-label">
                             	描述</label>
                         <div class="layui-input-inline">
-                            <textarea placeholder="请输入内容" class="layui-textarea" id="L_description" name="description" ></textarea></div>
+                            <textarea placeholder="请输入内容" th:text="${job.description}" class="layui-textarea" id="L_description" name="description" ></textarea></div>
                     </div>
                     <div class="layui-form-item">
                         <label for="L_repass" class="layui-form-label"></label>
@@ -73,7 +73,7 @@
                 form.verify({
                     name: function(value) {
                         if (value.length < 2) {
-                            return '昵称至少得2个字符啊';
+                            return '名称至少得2个字符啊';
                         }
                     }
                 });
@@ -87,15 +87,20 @@
 		    			type : "POST",
 		    			url : "/doAddJob",
 		    			dataType : "json",
-		    			data : data.field,
+		    			data : JSON.stringify(data.field),
+		    			contentType: "application/json;charset-UTF-8",
 		    			success : function(res) {
 		    				if(res.success){
-		    					layer.alert("登录成功", {
-		                            icon: 6
-		                         },
-		                         function() {
-		                        	 location.href='/index'
-		                         }); 
+		    					 layer.alert("增加成功", {
+		    	                        icon: 6
+		    	                    },
+		    	                    function() {
+		    	                        //关闭当前frame
+		    	                        xadmin.close();
+
+		    	                        // 可以对父窗口进行刷新 
+		    	                        xadmin.father_reload();
+		    	                    });
 		    				}else{
 		    					layer.msg(res.msg,function(){
 			                        //location.href='index.html'
@@ -103,23 +108,14 @@
 		    				}
 		    			},
 		    			error : function(data) {
-		    				layer.msg("登录失败，请稍后重试",function(){
+		    				layer.msg("添加失败，请稍后重试",function(){
 		                        //location.href='index.html'
 		                    });
 		    			}
 		    		});
                     
                     
-                    layer.alert("增加成功", {
-                        icon: 6
-                    },
-                    function() {
-                        //关闭当前frame
-                        xadmin.close();
-
-                        // 可以对父窗口进行刷新 
-                        xadmin.father_reload();
-                    });
+                   
                     return false;
                 });
 

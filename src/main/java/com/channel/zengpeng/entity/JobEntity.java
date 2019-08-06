@@ -3,6 +3,8 @@ package com.channel.zengpeng.entity;
 
 import javax.persistence.*;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,8 +23,11 @@ public class JobEntity implements Serializable {
     private Integer id;
     @Column(name = "class_path")
     private String classPath;	//执行类名
+    @Column(name = "job_name")
     private String name;          //job名称
+    @Column(name = "job_group")
     private String group;         //job组名
+    @Column(name = "job_cron")
     private String cron;          //执行的cron
     private String parameter;     //job的参数
     private String description;   //job描述信息
@@ -30,7 +35,8 @@ public class JobEntity implements Serializable {
     private String vmParam;       //vm参数
     @Column(name = "jar_path")
     private String jarPath;       //job的jar路径,在这里我选择的是定时执行一些可执行的jar包
-    private String status;        //job的执行状态,这里我设置为OPEN/CLOSE且只有该值为OPEN才会执行该Job
+    @Column(name="status")
+    private String status="CLOSE";        //job的执行状态,这里我设置为OPEN/CLOSE且只有该值为OPEN才会执行该Job
     public JobEntity() {
     }
   
