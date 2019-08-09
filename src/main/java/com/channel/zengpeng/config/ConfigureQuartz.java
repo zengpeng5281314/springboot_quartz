@@ -1,4 +1,4 @@
-package com.channel.zengpeng.primary.service;
+package com.channel.zengpeng.config;
 
 import org.quartz.spi.JobFactory;
 import org.quartz.spi.TriggerFiredBundle;
