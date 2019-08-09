@@ -1,4 +1,4 @@
-package com.channel.zengpeng.entity;
+package com.channel.zengpeng.primary.entity;
 
 
 import javax.persistence.*;

@@ -1,4 +1,4 @@
-package com.channel.zengpeng.entity;
+package com.channel.zengpeng.secondary.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "t_userinfo")
+@Table(name = "t_userinfo2")
 @Setter
 @Getter
 public class TUserInfo {

@@ -1,12 +1,12 @@
-package com.channel.zengpeng.service;
+package com.channel.zengpeng.primary.service;
 
 
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.channel.zengpeng.dao.JobEntityRepository;
-import com.channel.zengpeng.entity.JobEntity;
+import com.channel.zengpeng.primary.dao.JobEntityRepository;
+import com.channel.zengpeng.primary.entity.JobEntity;
 
 import java.util.ArrayList;
 import java.util.List;

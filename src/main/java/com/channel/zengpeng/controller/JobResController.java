@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.channel.zengpeng.entity.JobEntity;
 import com.channel.zengpeng.job.TestQuartz;
-import com.channel.zengpeng.service.DynamicJobService;
-import com.channel.zengpeng.service.QuartzJobManager;
+import com.channel.zengpeng.primary.entity.JobEntity;
+import com.channel.zengpeng.primary.service.DynamicJobService;
+import com.channel.zengpeng.primary.service.QuartzJobManager;
 
 import net.sf.json.JSONObject;
 

@@ -1,4 +1,4 @@
-package com.channel.zengpeng.service;
+package com.channel.zengpeng.primary.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
