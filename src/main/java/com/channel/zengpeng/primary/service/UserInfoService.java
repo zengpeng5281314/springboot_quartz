@@ -5,7 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.channel.zengpeng.primary.dao.PermissionDAO;
+import com.channel.zengpeng.primary.dao.RoleInfoDAO;
 import com.channel.zengpeng.primary.dao.UserInfoDAO;
+import com.channel.zengpeng.primary.entity.TPermission;
+import com.channel.zengpeng.primary.entity.TRoleInfo;
 import com.channel.zengpeng.primary.entity.TUserInfo;
 
 @Service
@@ -13,6 +17,10 @@ public class UserInfoService {
 
 	@Autowired 
 	UserInfoDAO userInfoDAO;
+	@Autowired 
+	PermissionDAO permissionDAO;
+	@Autowired 
+	RoleInfoDAO roleInfoDAO;
 	
 	public List<TUserInfo> findAll(){
 		return userInfoDAO.findAll();
@@ -36,4 +44,11 @@ public class UserInfoService {
 		return false;
 	}
 	
+	public List<TPermission> findTPermissionByRoleName(List<String> roleNameList){
+		return permissionDAO.findTPermissionByRoleName(roleNameList);
+	}
+	
+	public List<TRoleInfo> findTRoleInfoByByUsername(List<String> username){
+		return roleInfoDAO.findTRoleInfoByByUsername(username);
+	}
 }

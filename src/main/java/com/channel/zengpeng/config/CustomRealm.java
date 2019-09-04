@@ -1,6 +1,8 @@
 package com.channel.zengpeng.config;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.shiro.SecurityUtils;
@@ -15,6 +17,8 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.channel.zengpeng.primary.entity.TPermission;
+import com.channel.zengpeng.primary.entity.TRoleInfo;
 import com.channel.zengpeng.primary.entity.TUserInfo;
 import com.channel.zengpeng.primary.service.UserInfoService;
 
@@ -33,17 +37,32 @@ public class CustomRealm extends AuthorizingRealm {
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
 		System.out.println("-------授权--------");
 		String username = (String) SecurityUtils.getSubject().getPrincipal();
-		System.out.println("-------"+username+"--------");
+		System.out.println("-------" + username + "--------");
 		// TUserInfo userInfo = userInfoService.findByName(username);
 		SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 		// 设置权限
-		Set<String> stringSet = new HashSet<>();
-//		stringSet.add("user:list");
-		info.setStringPermissions(stringSet);
+		Set<String> tPermissionSet = new HashSet<>();
 		// 设置角色
-		Set<String> roles = new HashSet<>();
-		roles.add("admin");
-		info.setRoles(roles);
+		Set<String> rolesSet = new HashSet<>();
+
+		List<String> userNameList = new ArrayList<>();
+		userNameList.add(username);
+		// 获取角色
+		List<TRoleInfo> listTRoleInfo = userInfoService.findTRoleInfoByByUsername(userNameList);
+		List<String> roleNameList = new ArrayList<>();// 角色名称
+		for (TRoleInfo tRoleInfo : listTRoleInfo) {
+			if (!rolesSet.contains(tRoleInfo.getName()))
+				rolesSet.add(tRoleInfo.getName());
+			roleNameList.add(tRoleInfo.getName());
+		}
+		List<TPermission> listTPermission = userInfoService.findTPermissionByRoleName(roleNameList);
+		for (TPermission tPermission : listTPermission) {
+			if (!tPermissionSet.contains(tPermission.getName()))
+				tPermissionSet.add(tPermission.getName());
+		}
+		// stringSet.add("user:list");
+		info.setStringPermissions(tPermissionSet);
+		info.setRoles(rolesSet);
 		return info;
 	}
 
@@ -57,7 +76,7 @@ public class CustomRealm extends AuthorizingRealm {
 			throws AuthenticationException {
 		System.out.println("-------身份认证方法--------");
 		String userName = (String) authenticationToken.getPrincipal();
-		if(userName==null)
+		if (userName == null)
 			throw new AccountException("用户名不正确");
 		String userPwd = new String((char[]) authenticationToken.getCredentials());
 
@@ -68,7 +87,7 @@ public class CustomRealm extends AuthorizingRealm {
 			throw new AccountException("密码不正确");
 		}
 		SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(userName, userPwd, getName());
-		
+
 		return simpleAuthenticationInfo;
 	}
 }
