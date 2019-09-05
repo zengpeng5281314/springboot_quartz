@@ -48,7 +48,27 @@ public class UserInfoService {
 		return permissionDAO.findTPermissionByRoleName(roleNameList);
 	}
 	
-	public List<TRoleInfo> findTRoleInfoByByUsername(List<String> username){
-		return roleInfoDAO.findTRoleInfoByByUsername(username);
+	public List<TRoleInfo> findTRoleInfoByUsername(List<String> username){
+		return roleInfoDAO.findTRoleInfoByUsername(username);
+	}
+	
+	public List<TRoleInfo> findAllTRoleInfo(){
+		return roleInfoDAO.findAll();
+	}
+	
+	public TRoleInfo findTRoleInfo(int id){
+		return roleInfoDAO.findById(id).get();
+	}
+	
+	public TRoleInfo saveTRoleInfo(TRoleInfo roleInfo){
+		return roleInfoDAO.save(roleInfo);
+	}
+	
+	public TRoleInfo findTRoleInfoByRoleId(String roleId){
+		return roleInfoDAO.findTRoleInfoByRoleId(roleId);
+	}
+	
+	public List<TPermission> findAllTPermission(){
+		return permissionDAO.findAll();
 	}
 }

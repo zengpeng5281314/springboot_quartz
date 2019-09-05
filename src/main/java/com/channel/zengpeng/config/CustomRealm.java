@@ -48,7 +48,7 @@ public class CustomRealm extends AuthorizingRealm {
 		List<String> userNameList = new ArrayList<>();
 		userNameList.add(username);
 		// 获取角色
-		List<TRoleInfo> listTRoleInfo = userInfoService.findTRoleInfoByByUsername(userNameList);
+		List<TRoleInfo> listTRoleInfo = userInfoService.findTRoleInfoByUsername(userNameList);
 		List<String> roleNameList = new ArrayList<>();// 角色名称
 		for (TRoleInfo tRoleInfo : listTRoleInfo) {
 			if (!rolesSet.contains(tRoleInfo.getName()))

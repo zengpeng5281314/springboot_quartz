@@ -11,6 +11,7 @@ import com.channel.zengpeng.primary.entity.TRoleInfo;
 public interface RoleInfoDAO extends JpaRepository<TRoleInfo,Integer>{
 
 	@Query("select s from TRoleInfo s inner join TUserRoleInfo a on a.roleId = s.roleId inner join TUserInfo b on b.userId = a.userId where b.userName = ?1")
-    List<TRoleInfo> findTRoleInfoByByUsername(List<String> username);
+    List<TRoleInfo> findTRoleInfoByUsername(List<String> username);
 	
+	TRoleInfo findTRoleInfoByRoleId(String roleId);
 }
